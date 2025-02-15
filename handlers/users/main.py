@@ -37,15 +37,16 @@ async def callback_answer(callback: CallbackQuery):
             ifoda = callback.message.text.replace(",", ".")
 
             # Nolga bo‘lishni tekshirish
-            if "0" in ifoda and any(op in ifoda for op in ["/", "%"]):
-                await callback.message.edit_text("❗ Nolga bo'lish mumkin emas!", reply_markup=calculator_button.calculator_builder)
-            else:
-                try:
-                    # Hisoblash
-                    result = eval(ifoda[:-1])  # Bo‘lishni amalga oshirish
-                    await callback.message.edit_text(str(result) + "|", reply_markup=calculator_button.calculator_builder)
-                except Exception as e:
-                    await callback.message.edit_text(f"❗ Xatolik: {e}", reply_markup=calculator_button.calculator_builder)
+            try:
+                natija = str(eval(ifoda[:-1])) + "|"
+                await callback.message.edit_text(natija)
+                await callback.message.edit_reply_markup(reply_markup=calculator_button.calculator_builder)
+            except ZeroDivisionError:
+                await callback.answer("❗️ 0 ga bo‘lish mumkin emas!", show_alert=True)
+            except Exception:
+                await callback.answer("❗️ Xatolik yuz berdi. Iltimos, to‘g‘ri ifoda kiriting!", show_alert=True)
+
+            
 
         elif callback.data == "=":
             await callback.answer("❗ Ifoda to'liq emas!", show_alert=True)
